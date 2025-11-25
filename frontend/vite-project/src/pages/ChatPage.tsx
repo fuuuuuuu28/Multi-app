@@ -36,6 +36,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     fetchUsers();
+    console.log("first", users)
   }, [fetchUsers]);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const ChatPage = () => {
             </div>
           </div>
           <div className="overflow-auto">
-            {users.map((user, index) => (
+            {users?.map((user, index) => (
               <div
                 key={index}
                 onClick={() => {setSelectedUser(user)}}
