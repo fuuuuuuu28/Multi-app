@@ -5,7 +5,7 @@ import { Gemini } from "../models/gemini.model";
 dotenv.config();
 
 const apiKey = process.env.apiKey;
-const modelName = "gemini-2.5-flash-preview-09-2025";
+const modelName = "gemini-2.0-flash";
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
 export const callGeminiApi = async (

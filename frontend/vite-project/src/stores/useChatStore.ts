@@ -52,7 +52,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
     socket.auth = { userId };
     socket.connect(); //kích hoạt kết nối thủ công.
-    console.log("first", userId);
+    // console.log("first", userId);
 
     socket.on("connect", () => {
       console.log("Client connect success", socket.id);

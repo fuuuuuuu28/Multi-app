@@ -36,7 +36,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     fetchUsers();
-    console.log("first", users)
+    // console.log("first", users)
   }, [fetchUsers]);
 
   useEffect(() => {
