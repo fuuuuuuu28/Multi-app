@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const middleware_1 = require("../middlewares/middleware");
+const gemini_controller_1 = require("../controllers/gemini.controller");
+const router = (0, express_1.Router)();
+router.post("/", gemini_controller_1.callGeminiApi);
+router.post("/save", middleware_1.getUser, gemini_controller_1.saveText);
+router.get("/history", middleware_1.getUser, gemini_controller_1.historyText);
+exports.default = router;

@@ -22,7 +22,7 @@ initializeSocket(httpServer)
 app.use(clerkMiddleware())
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.NODE_ENV === "production" ? process.env.CLIENT_URI : "http://localhost:5173",
     credentials: true,
   })
 );
