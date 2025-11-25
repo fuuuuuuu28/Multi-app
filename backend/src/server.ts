@@ -15,6 +15,7 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+const PORT = process.env.PORT || 5000;
 
 connected();
 
@@ -33,6 +34,6 @@ app.use("/api/message",messageRouter)
 app.use("/api/todo", todoRouter)
 app.use("/api/gemini", geminiRouter)
 
-httpServer.listen(5000, () => {
+httpServer.listen(PORT, () => {
   console.log("is running");
 });
