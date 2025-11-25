@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useTodoStore } from "../stores/useTodoStore";
+import { Loader } from "lucide-react";
 
 type FilterType = "all" | "active" | "complete";
 
 const TodoPage = () => {
-  const { addTasks, getTasks, tasks, toggleTask, deleteTask } = useTodoStore();
+  const { addTasks, getTasks, tasks, toggleTask, deleteTask, isLoading } = useTodoStore();
 
   const [task, setTask] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
 
-  const countActive = tasks.filter((task) => !task.completed);
-  const countComplete = tasks.filter((task) => task.completed);
+  const countActive = tasks?.filter((task) => !task.completed);
+  const countComplete = tasks?.filter((task) => task.completed);
 
-  const filterTask = tasks.filter((t) => {
+  const filterTask = tasks?.filter((t) => {
     switch (filter) {
       case "active":
         return !t.completed;
@@ -53,7 +54,7 @@ const TodoPage = () => {
           className="bg-blue-500 text-white font-semibold p-4 rounded-xl"
           onClick={() => handleTask()}
         >
-          Add
+          {isLoading ? <Loader className="size-5 animate-spin"/> : "Add"}
         </button>
       </div>
 
@@ -61,15 +62,15 @@ const TodoPage = () => {
       <div className="grid grid-cols-3 h-[150px] gap-4 text-center my-4">
         <div className="bg-zinc-100 text-blue-500 font-bold text-2xl p-4 rounded-xl">
           <h1>Tất cả</h1>
-          <span className="text-5xl">{tasks.length}</span>
+          <span className="text-5xl">{tasks?.length}</span>
         </div>
         <div className="bg-zinc-100 text-orange-500 font-bold text-2xl p-4 rounded-xl">
           <h1>Chưa xong</h1>
-          <span className="text-5xl">{countActive.length}</span>
+          <span className="text-5xl">{countActive?.length}</span>
         </div>
         <div className="bg-zinc-100 text-green-500 font-bold text-2xl p-4 rounded-xl">
           <h1>Hoàn thành</h1>
-          <span className="text-5xl">{countComplete.length}</span>
+          <span className="text-5xl">{countComplete?.length}</span>
         </div>
       </div>
 
@@ -99,7 +100,7 @@ const TodoPage = () => {
           ))}
         </div>
         <div className="overflow-y-auto h-[280px]">
-          {filterTask.map((task) => (
+          {filterTask?.map((task) => (
             <div
               key={task._id}
               onClick={() => {

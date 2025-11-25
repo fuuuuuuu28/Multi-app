@@ -46,7 +46,7 @@ export const useTodoStore = create<TodoStore>((set) => ({
       console.log(res.data.tasks);
       set({ tasks: res.data.tasks });
     } catch (error: any) {
-      set({ error: error.response.data.message });
+      set({ error: error?.response?.data?.message });
     } finally {
       set({ isLoading: false });
     }

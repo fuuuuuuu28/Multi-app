@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useGeminiStore } from "../stores/useGeminiStore";
+import { Loader } from "lucide-react";
 
 const Chatbot = () => {
-  const { texts, saveText, fetchText, callGeminiApi } = useGeminiStore();
+  const { texts, saveText, fetchText, callGeminiApi, isLoading } =
+    useGeminiStore();
 
   const [input, setInput] = useState("");
   // const [messages, setMessages] = useState([
@@ -49,7 +51,7 @@ const Chatbot = () => {
         ref={chatHistoryRef}
         className="flex-1 overflow-auto p-6 space-y-4 bg-zinc-200"
       >
-        {texts.length ==0 ? (
+        {texts.length == 0 ? (
           <div className="text-4xl text-zinc-400 font-black text-center">
             Tôi là Gemini chat bot hỗ trợ bạn. Bạn có gì cần hỏi không?
           </div>
@@ -92,7 +94,7 @@ const Chatbot = () => {
             shadow-md active:scale-95 transition-all
           "
         >
-          Gửi
+          {isLoading ? <Loader className="size-5 animate-spin" /> : "Gửi"}
         </button>
       </div>
     </div>

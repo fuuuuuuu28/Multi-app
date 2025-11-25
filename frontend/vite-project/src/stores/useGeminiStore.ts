@@ -25,10 +25,10 @@ export const useGeminiStore = create<GeminiStore>((set) => ({
         role: h.role,
         text: h.text,
       }));
-
+      // console.log(first)
       set({ texts: history });
     } catch (error: any) {
-      set({ error: error.response.data.message });
+      set({ error: error?.response?.data?.message });
     } finally {
       set({ isLoading: false });
     }

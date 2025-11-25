@@ -23,9 +23,9 @@ interface ChatStore {
 }
 
 const socket = io(
-  `${import.meta.env.MODE} === "production" ? ${
-    import.meta.env.SERVER_URI
-  } :  "http://localhost:5000"`,
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_SERVER_URI
+    : "http://localhost:5000",
   {
     autoConnect: false, //kết nối khi muốn, thay vì tự động (tốt cho login/auth).
     withCredentials: true, //cho phép chia sẻ cookie, token (nếu có auth).
