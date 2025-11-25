@@ -22,9 +22,10 @@ interface ChatStore {
   clearSeletedUser: () => void;
 }
 
+console.log(import.meta.env.VITE_SERVER_URI)
 const socket = io(
   import.meta.env.MODE === "production"
-    ? import.meta.env.SERVER_URI
+    ? import.meta.env.VITE_SERVER_URI
     : "http://localhost:5000",
   {
     autoConnect: false, //kết nối khi muốn, thay vì tự động (tốt cho login/auth).
