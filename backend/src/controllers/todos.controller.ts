@@ -52,6 +52,7 @@ export const toggleTodo = async (
 ) => {
   try {
     const { id } = req.params;
+    console.log("first", {id})
     const clerkId = req.clerkId;
 
     const task = await Todo.findOne({ _id: id, clerkId });

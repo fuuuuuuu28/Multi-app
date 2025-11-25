@@ -32,16 +32,13 @@ export const callGeminiApi = async (
     const resp = await axios.post(apiUrl, payload, {
       headers: { "Content-Type": "application/json" },
     });
-
-    if (!resp.data?.candidates || resp.data.candidates.length === 0) {
-      return res.status(500).json({
-        reply: "Xin lỗi, tôi không thể hiểu câu hỏi của bạn. Vui lòng thử lại!",
-      });
-    }
+    
     const reply = resp.data.candidates[0].content.parts[0].text;
     res.json({ reply });
   } catch (error: any) {
     console.log("callGeminiApi controller error", error.message);
+    const reply = "Xin lỗi, tôi không thể hiểu câu hỏi của bạn. Vui lòng thử lại!"
+    res.json({ reply})
     next(error);
   }
 };
