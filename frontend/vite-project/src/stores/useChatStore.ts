@@ -22,13 +22,18 @@ interface ChatStore {
   clearSeletedUser: () => void;
 }
 
-const socket = io("http://localhost:5000", {
-  autoConnect: false, //kết nối khi muốn, thay vì tự động (tốt cho login/auth).
-  withCredentials: true, //cho phép chia sẻ cookie, token (nếu có auth).
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 500,
-});
+const socket = io(
+  `${import.meta.env.MODE} === "production" ? ${
+    import.meta.env.SERVER_URI
+  } :  "http://localhost:5000"`,
+  {
+    autoConnect: false, //kết nối khi muốn, thay vì tự động (tốt cho login/auth).
+    withCredentials: true, //cho phép chia sẻ cookie, token (nếu có auth).
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 500,
+  }
+);
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   isLoading: false,
@@ -159,10 +164,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }));
   },
 
-  clearSeletedUser:()=>{
-    set(() =>({
+  clearSeletedUser: () => {
+    set(() => ({
       selectedUser: null,
-    }))
+    }));
   },
 
   sendMessages: async (senderId, receiverId, content) => {
