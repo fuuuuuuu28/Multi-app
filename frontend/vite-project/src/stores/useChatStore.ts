@@ -30,6 +30,7 @@ const socket = io(
   {
     autoConnect: false, //kết nối khi muốn, thay vì tự động (tốt cho login/auth).
     withCredentials: true, //cho phép chia sẻ cookie, token (nếu có auth).
+    transports: ["websocket"],
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 500,
