@@ -55,9 +55,9 @@ const Authorization = ({ children }: { children: React.ReactNode }) => {
 
   if (!isSignedIn || !userId || tokenValid === false) {
     return (
-      <div className="h-screen w-full flex items-center justify-center">
+      <div className="min-w-screen h-screen bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center ">
         <SignInButton>
-          <button className="px-4 py-2 bg-black text-white rounded-lg">
+          <button className="w-[300px] h-[130px] text-3xl px-4 py-2 bg-black text-white rounded-lg hover:cursor-pointer">
             Sign In
           </button>
         </SignInButton>
