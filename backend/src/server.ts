@@ -19,14 +19,14 @@ const PORT = process.env.PORT || 5000;
 
 connected();
 
-initializeSocket(httpServer)
-app.use(clerkMiddleware())
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production" ? process.env.CLIENT_URI : "http://localhost:5173",
     credentials: true,
   })
 );
+initializeSocket(httpServer)
+app.use(clerkMiddleware())
 app.use(express.json());
 
 app.use("/api/user", userRouter);
