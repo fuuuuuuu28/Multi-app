@@ -44,7 +44,7 @@ const ChatPage = () => {
     if (selectedUser?.clerkId) {
       fetchMessage(selectedUser?.clerkId);
     }
-  }, [selectedUser]);
+  }, [selectedUser, messages]);
 
   const handleSend = () => {
     if (!user?.id || !selectedUser?.clerkId) {
