@@ -2,6 +2,9 @@ import { Server } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { Message } from "../models/messages.model";
 import { User } from "../models/users.model";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const initializeSocket = (server: HTTPServer): void => {
   const io = new Server(server, {
