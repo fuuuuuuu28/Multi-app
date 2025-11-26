@@ -8,6 +8,7 @@ dotenv.config();
 
 export const initializeSocket = (server: HTTPServer): void => {
   const io = new Server(server, {
+    transports: ["websocket"],
     cors: {
       origin:
         process.env.NODE_ENV === "production"
