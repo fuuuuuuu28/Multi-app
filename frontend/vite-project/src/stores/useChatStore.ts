@@ -22,7 +22,7 @@ interface ChatStore {
   clearSeletedUser: () => void;
 }
 
-console.log(import.meta.env.VITE_SERVER_URI)
+// console.log(import.meta.env.VITE_SERVER_URI)
 const socket = io(
   import.meta.env.MODE === "production"
     ? import.meta.env.VITE_SERVER_URI
@@ -153,7 +153,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       // console.log(res.data)
       set({ users: res.data.users });
     } catch (error: any) {
-      set({ error: error.respone.data.message });
+      set({ error: error?.respone?.data?.message });
     } finally {
       set({ isLoading: false });
     }

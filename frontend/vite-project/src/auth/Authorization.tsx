@@ -1,19 +1,23 @@
-import { useAuth } from "@clerk/clerk-react";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axios";
 import { useChatStore } from "../stores/useChatStore";
 
 const useAxiosAuth = () => {
-  const { getToken } = useAuth();
+  const { getToken, signOut } = useAuth();
 
   useEffect(() => {
     const interceptor = axiosInstance.interceptors.request.use(
       async (config) => {
-        const token = await getToken(); // luôn lấy token mới
-        if (token) {
-          // console.log("token",token)
-          config.headers.Authorization = `Bearer ${token}`;
+        const token = await getToken();
+
+        if (!token) {
+          console.warn("Token not found, forcing logout...");
+          await signOut();     // buộc logout
+          return Promise.reject("No token found");
         }
+
+        config.headers.Authorization = `Bearer ${token}`;
         return config;
       },
       (error) => Promise.reject(error)
@@ -26,37 +30,41 @@ const useAxiosAuth = () => {
 };
 
 const Authorization = ({ children }: { children: React.ReactNode }) => {
-  const { userId, isSignedIn } = useAuth();
+  const { userId, isSignedIn, getToken } = useAuth();
   const { initialSocket, disconnected } = useChatStore();
 
-  const [isLoading] = useState(false);
+  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
   useAxiosAuth();
 
   useEffect(() => {
-    // setIsLoading(true);
-    if (!userId || !isSignedIn) return;
+    const checkToken = async () => {
+      const token = await getToken();
+      setTokenValid(!!token);
+    };
 
-    initialSocket(userId); // socket vẫn dùng userId để identify
+    checkToken();
+  }, [getToken]);
+
+  useEffect(() => {
+    if (userId || isSignedIn) {  
+      initialSocket(userId);
+    }
+
     return () => disconnected();
   }, [userId, isSignedIn]);
 
-  if (isLoading) {
+  if (!isSignedIn || !userId || tokenValid === false) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <div className="size-8 text-emerald-400 animate-spin" />
+        <SignInButton>
+          <button className="px-4 py-2 bg-black text-white rounded-lg">
+            Sign In
+          </button>
+        </SignInButton>
       </div>
     );
   }
 
-  // if (!isSignedIn) {
-  //   return (
-  //     <div className="h-screen w-full flex items-center justify-center">
-  //       <SignInButton>
-  //         <button> Sign In</button>
-  //       </SignInButton>
-  //     </div>
-  //   );
-  // }
   return <div>{children}</div>;
 };
 
