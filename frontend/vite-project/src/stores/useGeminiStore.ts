@@ -3,7 +3,10 @@ import { axiosInstance } from "../lib/axios";
 import type { Texts } from "../types/type";
 
 interface GeminiStore {
-  isLoading: boolean;
+  isLoading: {
+    call: boolean;
+    history: boolean;
+  };
   error: string | null;
   texts: Texts[];
 
@@ -13,12 +16,15 @@ interface GeminiStore {
 }
 
 export const useGeminiStore = create<GeminiStore>((set) => ({
-  isLoading: false,
+  isLoading: {
+    call: false,
+    history: false,
+  },
   error: null,
   texts: [],
 
   fetchText: async () => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, history: true } }));
     try {
       const res = await axiosInstance.get("/gemini/history");
       const history = res.data.history.map((h: any) => ({
@@ -30,11 +36,11 @@ export const useGeminiStore = create<GeminiStore>((set) => ({
     } catch (error: any) {
       set({ error: error?.response?.data?.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, history: false } }));
     }
   },
   saveText: async (role, text) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, call: true } }));
     try {
       const res = await axiosInstance.post("/gemini/save", { role, text });
       const saved = res.data.saveText;
@@ -45,11 +51,11 @@ export const useGeminiStore = create<GeminiStore>((set) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, call: false } }));
     }
   },
   callGeminiApi: async (messages) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, call: true } }));
     try {
       const res = await axiosInstance.post("/gemini", {
         messages,
@@ -68,7 +74,7 @@ export const useGeminiStore = create<GeminiStore>((set) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, call: false } }));
     }
   },
 }));

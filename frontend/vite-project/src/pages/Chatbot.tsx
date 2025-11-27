@@ -35,6 +35,7 @@ const Chatbot = () => {
     setInput("");
 
     // Xử lý câu hỏi gemini bên backend
+
     await callGeminiApi([...texts, userMessage]);
     // console.log("res: ", reply);
   };
@@ -56,20 +57,30 @@ const Chatbot = () => {
             Tôi là Gemini chat bot hỗ trợ bạn. Bạn có gì cần hỏi không?
           </div>
         ) : (
-          texts.map((t, i) => (
-            <div
-              key={i}
-              className={`max-w-[80%] px-4 py-2 rounded-xl shadow 
-              ${
-                t.role === "user"
-                  ? "ml-auto bg-blue-500 text-white rounded-br-none"
-                  : "mr-auto bg-white text-zinc-800 border rounded-bl-none"
-              }
-            `}
-            >
-              {t.text}
-            </div>
-          ))
+          <>
+            {texts.map((t, i) => (
+              <div
+                key={i}
+                className={`max-w-[80%] px-4 py-2 rounded-xl shadow 
+            ${
+              t.role === "user"
+                ? "ml-auto bg-blue-500 text-white rounded-br-none"
+                : "mr-auto bg-white text-zinc-800 border rounded-bl-none"
+            }
+          `}
+              >
+                {t.text}
+              </div>
+            ))}
+
+            {/* Bubble "Thinking..." khi Gemini đang trả lời */}
+            {isLoading.call && (
+              <div className="max-w-[80%] mr-auto bg-white text-zinc-800 border rounded-xl rounded-bl-none px-4 py-2 shadow flex items-center gap-2">
+                <Loader className="size-4 animate-spin text-zinc-500" />
+                <span>Thinking...</span>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -94,7 +105,7 @@ const Chatbot = () => {
             shadow-md active:scale-95 transition-all
           "
         >
-          {isLoading ? <Loader className="size-5 animate-spin" /> : "Gửi"}
+          {isLoading.call ? <Loader className="size-5 animate-spin" /> : "Gửi"}
         </button>
       </div>
     </div>

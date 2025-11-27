@@ -3,7 +3,12 @@ import type { Todo } from "../types/type";
 import { axiosInstance } from "../lib/axios";
 
 interface TodoStore {
-  isLoading: boolean;
+  isLoading: {
+    add: boolean;
+    tasks: boolean;
+    toggle: boolean;
+    delete: boolean;
+  };
   error: string | null;
   tasks: Todo[];
   task: Todo | null;
@@ -15,14 +20,19 @@ interface TodoStore {
 }
 
 export const useTodoStore = create<TodoStore>((set) => ({
-  isLoading: false,
+  isLoading: {
+    add: false,
+    tasks: false,
+    toggle: false,
+    delete: false,
+  },
   error: null,
   tasks: [],
   task: null,
   completed: false,
 
   addTasks: async (task, completed) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, add: true } }));
     try {
       const res = await axiosInstance.post("/todo/add", {
         task,
@@ -34,26 +44,27 @@ export const useTodoStore = create<TodoStore>((set) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, add: false } }));
     }
   },
 
   getTasks: async () => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, tasks: true } }));
     try {
       const res = await axiosInstance.get("/todo/");
 
-      console.log(res.data.tasks);
+      // console.log(res.data.tasks);
       set({ tasks: res.data.tasks });
     } catch (error: any) {
       set({ error: error?.response?.data?.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, tasks: false } }));
     }
   },
 
   toggleTask: async (id) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, toggle: true } }));
+
     try {
       const res = await axiosInstance.patch(`/todo/toggle/${id}`);
       const updated = res.data.task;
@@ -64,12 +75,13 @@ export const useTodoStore = create<TodoStore>((set) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, toggle: false } }));
     }
   },
 
   deleteTask: async (id) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, delete: true } }));
+
     try {
       const res = await axiosInstance.delete(`/todo/delete/${id}`);
       const deleteTask = res.data.task;
@@ -79,7 +91,7 @@ export const useTodoStore = create<TodoStore>((set) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, delete: false } }));
     }
   },
 }));
