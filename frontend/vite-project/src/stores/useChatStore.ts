@@ -4,7 +4,11 @@ import type { Message, User } from "../types/type";
 import { axiosInstance } from "../lib/axios";
 
 interface ChatStore {
-  isLoading: boolean;
+  isLoading: {
+    message: boolean;
+    user: boolean;
+    send: boolean;
+  };
   error: string | null;
   socket: any;
   isConnected: boolean;
@@ -38,7 +42,11 @@ const socket = io(
 );
 
 export const useChatStore = create<ChatStore>((set, get) => ({
-  isLoading: false,
+  isLoading: {
+    message: false,
+    user: false,
+    send: false,
+  },
   error: null,
   socket: socket,
   isConnected: false,
@@ -135,7 +143,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   fetchMessage: async (userId) => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, message: true } }));
     try {
       const res = await axiosInstance.get(`/message/${userId}`);
       // console.log(res)
@@ -143,20 +151,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, message: false } }));
     }
   },
 
   fetchUsers: async () => {
-    set({ isLoading: true });
+    set((state) => ({ isLoading: { ...state.isLoading, user: true } }));
     try {
       const res = await axiosInstance.get("/user");
       // console.log(res.data)
       set({ users: res.data.users });
     } catch (error: any) {
-      set({ error: error?.respone?.data?.message });
+      set({ error: error?.response?.data?.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, user: false } }));
     }
   },
 
@@ -173,9 +181,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   sendMessages: async (senderId, receiverId, content) => {
-    if (!get().socket) {
-      return;
+    set((state) => ({ isLoading: { ...state.isLoading, false: true } }));
+    try {
+      if (!get().socket) {
+        return;
+      }
+      socket.emit("send_messages", { senderId, receiverId, content });
+    } catch (error: any) {
+      set({ error: error?.response?.data?.message });
+    } finally {
+      set((state) => ({ isLoading: { ...state.isLoading, send: false } }));
     }
-    socket.emit("send_messages", { senderId, receiverId, content });
   },
 }));

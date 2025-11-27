@@ -3,7 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useChatStore } from "../stores/useChatStore";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader } from "lucide-react";
 
 const ChatPage = () => {
   const {
@@ -15,6 +15,7 @@ const ChatPage = () => {
     fetchMessage,
     sendMessages,
     clearSeletedUser,
+    isLoading,
   } = useChatStore();
   const { user } = useUser();
   const currentUser = user;
@@ -80,43 +81,54 @@ const ChatPage = () => {
             <span className="text-xs font-bold text-green-500">Online</span>
           </div>
         </div>
-        <div className="overflow-auto">
-          {users?.map((user, index) => (
-            <div
-              key={index}
-              onClick={() => {
-                setSelectedUser(user);
-              }}
-              className="flex items-center justify-between gap-2 px-4 py-3 border-b border-zinc-700 hover:bg-zinc-800 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <img
-                  src={user.image}
-                  alt="user"
-                  className="w-12 h-12 rounded-full border-2 border-purple-500"
-                />
-                <div>
-                  <h3 className=" font-medium">{user.fullName}</h3>
-                  <p className="text-xs text-zinc-400 truncate w-32">
-                    {!user.lastMessage
-                      ? ""
-                      : currentUser?.id === user.lastMessage?.senderId
-                      ? `Bạn: ${user.lastMessage?.content}`
-                      : user.lastMessage?.content}
-                  </p>
-                </div>
-              </div>
-
-              <span className="text-xs text-gray-500">
-                {user.lastMessage?.createdAt
-                  ? formatDistanceToNow(new Date(user.lastMessage.createdAt), {
-                      addSuffix: true,
-                      locale: vi,
-                    })
-                  : ""}
-              </span>
+        <div className="h-full overflow-auto">
+          {isLoading.user ? (
+            <div className="flex items-center justify-center p-10 overflow-hidden">
+              <Loader className="size-15 animate-spin" />
             </div>
-          ))}
+          ) : (
+            <>
+              {users?.map((user, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    setSelectedUser(user);
+                  }}
+                  className="flex items-center justify-between gap-2 px-4 py-3 border-b border-zinc-700 hover:bg-zinc-800 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={user.image}
+                      alt="user"
+                      className="w-12 h-12 rounded-full border-2 border-purple-500"
+                    />
+                    <div>
+                      <h3 className=" font-medium">{user.fullName}</h3>
+                      <p className="text-xs text-zinc-400 truncate w-32">
+                        {!user.lastMessage
+                          ? ""
+                          : currentUser?.id === user.lastMessage?.senderId
+                          ? `Bạn: ${user.lastMessage?.content}`
+                          : user.lastMessage?.content}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-gray-500">
+                    {user.lastMessage?.createdAt
+                      ? formatDistanceToNow(
+                          new Date(user.lastMessage.createdAt),
+                          {
+                            addSuffix: true,
+                            locale: vi,
+                          }
+                        )
+                      : ""}
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
@@ -153,37 +165,52 @@ const ChatPage = () => {
         )}
         {/* Chat Container */}
         <div className="flex-1 overflow-auto p-4 space-y-4">
-          {/* Fetch message */}
-          {messages.map((message) =>
-            message.senderId === user?.id ? (
-              <div key={message._id} className="flex justify-end">
-                <div className="bg-purple-600 p-3 rounded-xl max-w-xs">
-                  <p>{message.content}</p>
-                </div>
-              </div>
-            ) : (
-              <div key={message._id} className="flex gap-2">
-                <img
-                  src={selectedUser?.image}
-                  className="w-8 h-8 rounded-full"
-                />
-                <div className="bg-zinc-800 p-3 rounded-xl max-w-xs">
-                  <p>{message.content}</p>
-                </div>
-              </div>
-            )
-          )}
-          <span className="text-[10px] text-zinc-200 block mt-1 text-right">
-            {selectedUser?.lastMessage?.createdAt
-              ? formatDistanceToNow(
-                  new Date(selectedUser.lastMessage.createdAt),
-                  {
-                    addSuffix: true,
-                    locale: vi,
-                  }
+          {/* 1. Loading tin nhắn */}
+          {messages.length != 0 && isLoading.message ? (
+            <div className="flex items-center justify-center p-10">
+              <Loader className="size-15 animate-spin" />
+            </div>
+          ) : messages.length === 0 ? (
+            /* 2. Không có tin nhắn */
+            <div className="text-center text-2xl font-bold text-zinc-400 mt-10">
+              <span>Hãy bắt đầu cuộc trò chuyện</span>
+            </div>
+          ) : (
+            /* 3. Có tin nhắn */
+            <>
+              {messages.map((message) =>
+                message.senderId === user?.id ? (
+                  <div key={message._id} className="flex justify-end">
+                    <div className="bg-purple-600 p-3 rounded-xl max-w-xs">
+                      <p>{message.content}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={message._id} className="flex gap-2">
+                    <img
+                      src={selectedUser?.image}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div className="bg-zinc-800 p-3 rounded-xl max-w-xs">
+                      <p>{message.content}</p>
+                    </div>
+                  </div>
                 )
-              : ""}
-          </span>
+              )}
+
+              {/* Time */}
+              <span className="text-[10px] text-zinc-200 block mt-1 text-right">
+                {selectedUser?.lastMessage?.createdAt &&
+                  formatDistanceToNow(
+                    new Date(selectedUser.lastMessage.createdAt),
+                    {
+                      addSuffix: true,
+                      locale: vi,
+                    }
+                  )}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Messages Input */}
